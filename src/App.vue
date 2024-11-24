@@ -1,124 +1,77 @@
+
 <template>
-  <h1>Приложение погоды Api-Weather</h1>
-  <select @change="city($event)">
-   <option value="56.50,60.35">Екатеринбург</option>
-   <option value="55.4745,49.687">Казань</option>
-   <option value="47.1426,39.4238">Ростов-на-Дону</option>
-   </select>
-  <p v-if="!weather_data">Загрузка ...</p>
-  <div v-else>
-   <h2>{{ weather_data.city.name }} </h2>
-   <table>
-    <tr><td>
-     <p class="day">Первый день:</p>
-     <p>Температура:{{ weather_data.list[0].main.temp }}</p>
-     <p>Влажность:{{ weather_data.list[0].main.humidity }}</p>
-     <p>Давление:{{ weather_data.list[0].main.pressure }}</p>
-     <p>Описание:{{ weather_data.list[0].weather[0].description }}</p>
-     <img 
-  :src="`https://openweathermap.org/img/wn/${weather_data.list[0].weather[0].icon}@2x.png`" 
-  alt="Иконка погоды" />
-    </td></tr>
-    <tr><td>
-     <p class="day">Второй день:</p>
-     <p>Температура:{{ weather_data.list[8].main.temp }}</p>
-     <p>Влажность:{{ weather_data.list[8].main.humidity }}</p>
-     <p>Давление:{{ weather_data.list[8].main.pressure }}</p>
-     <p>Описание:{{ weather_data.list[8].weather[0].description }}</p>
-     <img 
-  :src="`https://openweathermap.org/img/wn/${weather_data.list[8].weather[0].icon}@2x.png`" 
-  alt="Иконка погоды" />
-    </td></tr>
-    <tr><td>
-     <p class="day">Третий день:</p>
-     <p>Температура:{{ weather_data.list[16].main.temp }}</p>
-     <p>Влажность:{{ weather_data.list[16].main.humidity }}</p>
-     <p>Давление:{{ weather_data.list[16].main.pressure }}</p>
-     <p>Описание:{{ weather_data.list[16].weather[0].description }}</p>
-     <img 
-  :src="`https://openweathermap.org/img/wn/${weather_data.list[16].weather[0].icon}@2x.png`" 
-  alt="Иконка погоды" />
-    </td></tr>
-    <tr><td>
-     <p class="day">Четвёртый день:</p>
-     <p>Температура:{{ weather_data.list[24].main.temp }}</p>
-     <p>Влажность:{{ weather_data.list[24].main.humidity }}</p>
-     <p>Давление:{{ weather_data.list[24].main.pressure }}</p>
-     <p>Описание:{{ weather_data.list[24].weather[0].description }}</p>
-     <img 
-  :src="`https://openweathermap.org/img/wn/${weather_data.list[24].weather[0].icon}@2x.png`" 
-  alt="Иконка погоды" />
-    </td></tr>
-    <tr><td>
-     <p class="day">Пятый день:</p>
-     <p>Температура:{{ weather_data.list[32].main.temp }}</p>
-     <p>Влажность:{{ weather_data.list[32].main.humidity }}</p>
-     <p>Давление:{{ weather_data.list[32].main.pressure }}</p>
-     <img 
-  :src="`https://openweathermap.org/img/wn/${weather_data.list[32].weather[0].icon}@2x.png`" 
-  alt="Иконка погоды" />
-    </td></tr>
-  </table>
+  <h1>Приложение погоды</h1>
+  <select @change="city($event)" class="bat">
+    <option value="57.9194/59.965">Нижний Тагил</option>
+    <option value="55.7522/37.6156">Москва</option>
+    <option value="55.7887/49.1221">Казань</option>
+  </select>
+  <p v-if="!weather_date">Загрузка ...</p>
+
+  <div v-else class="bod">
+    <div v-if="forecast_date">
+      <ForecastCar v-for="(f, i) in forecast_date.list" :key="i" :weather_date="f"></ForecastCar>
+    </div>
   </div>
-  </template>
-  <script>
-  export default {
-   name: 'App',
-   data(){
-    return{
-     weather_data:null
+
+</template>
+
+<script>
+import ForecastCar from './components/ForecastCar.vue';
+
+export default {
+  name: 'App',
+  data() {
+    return {
+      weather_date: null,
+      forecast_date: null
     }
-   },
-   mounted(){
-    
-  fetch("https://api.openweathermap.org/data/2.5/forecast?lat=56.50&lon=60.35&appid=5aabb0813a2a69e1ca65a89ecae8e3fd&lang=ru&units=metric")
-    .then(resp=>resp.json())
-    .then(json=>{
-     this.weather_data=json;
-    })
-   },
-   methods:{
-    city(sity){
-     
-  fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${sity.target.value.split(",")[0]}&lon=${sity.target.value.split(",")[1]}&appid=5aabb0813a2a69e1ca65a89ecae8e3fd&lang=ru&units=metric`)
-    .then(resp=>resp.json())
-    .then(json=>{
-     this.weather_data=json;
-    });
-   },
-   components: {
-   
-   }
-   }}
-  </script>
-  <style>
-  #app {
-   text-align: center;
-   font-family: Helvetica;
+  },
+  mounted() {
+    //fetch("https://api.openweathermap.org/data/2.5/weather?lat=57.9194&lon=59.965&appid=5aabb0813a2a69e1ca65a89ecae8e3fd&lang=ru&units=metric")
+      fetch('weather.json')
+      .then(resp => resp.json())
+      .then(json => {
+        this.weather_date = json;
+      })
+    //fetch("https://api.openweathermap.org/data/2.5/forecast?lat=57.9194&lon=59.965&appid=5aabb0813a2a69e1ca65a89ecae8e3fd&lang=ru&units=metric")
+      fetch('forecast.json')
+      .then(resp => resp.json())
+      .then(json => {
+        this.forecast_date = json;
+      })
+  },
+  methods: {
+    city(sity) {
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${sity.target.value.split("/")[0]}&lon=${sity.target.value.split("/")[1]}&appid=5aabb0813a2a69e1ca65a89ecae8e3fd&lang=ru&units=metric`)
+        .then(resp => resp.json())
+        .then(json => {
+          this.weather_date = json;
+        });
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${sity.target.value.split("/")[0]}&lon=${sity.target.value.split("/")[1]}&appid=5aabb0813a2a69e1ca65a89ecae8e3fd&lang=ru&units=metric`)
+        .then(resp => resp.json())
+        .then(json => {
+          this.forecast_date = json;
+        });
+    }
+  },
+  components: {
+    ForecastCar
   }
-  select {
-    font-family: Helvetica;
-    font-size: 14px;
-  }
-  table{
-   border-top: 2px dotted rgb(84, 77, 175);
-   border-bottom: 2px dotted rgb(84, 77, 175);
-  margin: 0% auto;
-  margin-top: 2%;
-  }
-  .day {
-    font-size: 20px;
-    font-weight: bold;
-    color: blueviolet;
-  }
-  td{
-   border-top: 2px dotted rgb(84, 77, 175);
-   border-bottom: 2px dotted rgb(84, 77, 175);
-  }
-  h1 {
+}
+</script>
+
+<style>
+#app {
+
+  text-align: center;
+}
+h1 {
     color: rgb(165, 62, 168);
   }
-  h2 {
-    color:rgb(233, 24, 233);
-  }
-  </style>
+body {
+  background-color: rgb(231, 217, 226);
+  font-family: Arial;
+}
+
+</style>
